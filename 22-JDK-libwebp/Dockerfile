@@ -3,11 +3,12 @@
 # Environment: Java
 # Minimum Panel Version: 1.7.0
 # ----------------------------------
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG TARGETPLATFORM
-ARG GRAAL_VERSION=20.0.2
-ARG JAVA_VERSION=20
+ARG GRAAL_VERSION=22.0.2
+ARG JAVA_VERSION=22
+ARG LIBWEBP_VERSION=1.4.0
 
 MAINTAINER RikoDEV, <kontakt@riko.dev>
 
@@ -28,12 +29,22 @@ RUN apt-get update -y \
   && mkdir -p /opt/java/graalvm \
   && cd /opt/java/graalvm \
   && tar -xf /tmp/graalvm.tar.gz --strip-components=1 \
-  && export PATH="/opt/java/graalvm/bin:$PATH" \
+  && case ${TARGETPLATFORM} in \
+         "linux/amd64")  ARCH=x86-64  ;; \
+         "linux/arm64")  ARCH=aarch64  ;; \
+    esac \
+  && curl --retry 3 -Lfso /tmp/libwebp.tar.gz https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}-linux-${ARCH}.tar.gz \
+  && mkdir -p /opt/libwebp \
+  && cd /opt/libwebp \
+  && tar -xf /tmp/libwebp.tar.gz --strip-components=1 \
+  && export PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH" \
   && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /tmp/libwebp.tar.gz \
   && rm -rf /tmp/graalvm.tar.gz
 
 ENV JAVA_HOME=/opt/java/graalvm \
-    PATH="/opt/java/graalvm/bin:$PATH"
+    LIBWEBP_HOME=/opt/libwebp \
+    PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH"
 
 # Step 2 - add pterodactyl stuff
 RUN useradd -d /home/container -m container

@@ -3,12 +3,12 @@
 # Environment: Java
 # Minimum Panel Version: 1.7.0
 # ----------------------------------
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG TARGETPLATFORM
-ARG GRAAL_VERSION=21.0.1
+ARG GRAAL_VERSION=21.0.2
 ARG JAVA_VERSION=21
-ARG LIBWEBP_VERSION=1.3.2
+ARG LIBWEBP_VERSION=1.4.0
 
 MAINTAINER RikoDEV, <kontakt@riko.dev>
 

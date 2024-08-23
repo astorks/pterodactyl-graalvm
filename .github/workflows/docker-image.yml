@@ -14,10 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         tag:
-          - 17
-          - 17-JDK
           - 21-JDK
           - 21-JDK-libwebp
+          - 22-JDK
+          - 22-JDK-libwebp
     steps:
       - name: Checkout
         uses: actions/checkout@v3
