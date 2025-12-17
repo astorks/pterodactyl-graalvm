@@ -30,8 +30,8 @@ RUN apt-get update -y \
     && cd /opt/java/graalvm \
     && tar -xf /tmp/graalvm.tar.gz --strip-components=1 \
     && case ${TARGETPLATFORM} in \
-            "linux/amd64")  ARCH=x64  ;; \
-            "linux/arm64")  ARCH=aarch64  ;; \
+         "linux/amd64")  ARCH=x86-64  ;; \
+         "linux/arm64")  ARCH=aarch64  ;; \
     esac \
     && curl --retry 3 -Lfso /tmp/libwebp.tar.gz https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}-linux-${ARCH}.tar.gz \
     && mkdir -p /opt/libwebp \
