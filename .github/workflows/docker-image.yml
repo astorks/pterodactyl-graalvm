@@ -20,6 +20,7 @@ jobs:
           - 24-JDK-libwebp
           - 25-JDK
           - 25-JDK-libwebp
+          - 25-JDK-libwebp-bun
     steps:
       - name: Checkout
         uses: actions/checkout@v3

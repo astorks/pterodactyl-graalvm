@@ -8,6 +8,8 @@ FROM ubuntu:24.04
 ARG TARGETPLATFORM
 ARG GRAAL_VERSION=25.0.1
 ARG JAVA_VERSION=25
+ARG LIBWEBP_VERSION=1.6.0
+ARG BUN_VERSION=1.3.5
 
 MAINTAINER RikoDEV, <kontakt@riko.dev>
 
@@ -17,7 +19,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN apt-get update -y \
-    && apt-get install -y --no-install-recommends curl ca-certificates openssl git tar sqlite3 fontconfig tzdata locales iproute2 \
+    && apt-get install -y --no-install-recommends curl ca-certificates openssl git tar sqlite3 fontconfig tzdata locales iproute2 unzip \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen en_US.UTF-8 \
     && case ${TARGETPLATFORM} in \
@@ -28,12 +30,24 @@ RUN apt-get update -y \
     && mkdir -p /opt/java/graalvm \
     && cd /opt/java/graalvm \
     && tar -xf /tmp/graalvm.tar.gz --strip-components=1 \
-    && export PATH="/opt/java/graalvm/bin:$PATH" \
+    && case ${TARGETPLATFORM} in \
+         "linux/amd64")  ARCH=x86-64  ;; \
+         "linux/arm64")  ARCH=aarch64  ;; \
+    esac \
+    && curl --retry 3 -Lfso /tmp/libwebp.tar.gz https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}-linux-${ARCH}.tar.gz \
+    && mkdir -p /opt/libwebp \
+    && cd /opt/libwebp \
+    && tar -xf /tmp/libwebp.tar.gz --strip-components=1 \
+    && export PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH" \
     && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/libwebp.tar.gz \
     && rm -rf /tmp/graalvm.tar.gz
 
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
+
 ENV JAVA_HOME=/opt/java/graalvm \
-    PATH="/opt/java/graalvm/bin:$PATH"
+    LIBWEBP_HOME=/opt/libwebp \
+    PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH"
 
 # Step 2 - add pterodactyl stuff
 RUN useradd -d /home/container -m container

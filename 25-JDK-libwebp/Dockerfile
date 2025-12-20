@@ -42,8 +42,6 @@ RUN apt-get update -y \
     && rm -rf /tmp/libwebp.tar.gz \
     && rm -rf /tmp/graalvm.tar.gz
 
-RUN curl -fsSL https://bun.sh/install | bash
-
 ENV JAVA_HOME=/opt/java/graalvm \
     LIBWEBP_HOME=/opt/libwebp \
     PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH"
