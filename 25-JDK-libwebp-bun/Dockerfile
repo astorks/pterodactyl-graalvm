@@ -38,16 +38,23 @@ RUN apt-get update -y \
     && mkdir -p /opt/libwebp \
     && cd /opt/libwebp \
     && tar -xf /tmp/libwebp.tar.gz --strip-components=1 \
-    && export PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH" \
+    && case ${TARGETPLATFORM} in \
+         "linux/amd64")  ARCH=x64  ;; \
+         "linux/arm64")  ARCH=aarch64  ;; \
+    esac \
+    && curl --retry 3 -Lfso /tmp/bun.zip https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-${ARCH}.zip \
+    && cd /opt \
+    && unzip /tmp/bun.zip \
+    && mv bun-linux-${ARCH} bun-linux \
+    && export PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:/opt/bun-linux:$PATH" \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/libwebp.tar.gz \
-    && rm -rf /tmp/graalvm.tar.gz
-
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
+    && rm -rf /tmp/graalvm.tar.gz \
+    && rm -rf /tmp/bun.zip
 
 ENV JAVA_HOME=/opt/java/graalvm \
     LIBWEBP_HOME=/opt/libwebp \
-    PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:$PATH"
+    PATH="/opt/java/graalvm/bin:/opt/libwebp/bin:/opt/bun-linux:$PATH"
 
 # Step 2 - add pterodactyl stuff
 RUN useradd -d /home/container -m container
