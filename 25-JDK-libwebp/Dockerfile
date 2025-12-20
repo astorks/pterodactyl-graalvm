@@ -21,7 +21,6 @@ RUN apt-get update -y \
     && apt-get install -y --no-install-recommends curl ca-certificates openssl git tar sqlite3 fontconfig tzdata locales iproute2 \
     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen en_US.UTF-8 \
-    && curl -fsSL https://bun.sh/install | bash \
     && case ${TARGETPLATFORM} in \
             "linux/amd64")  ARCH=x64  ;; \
             "linux/arm64")  ARCH=aarch64  ;; \
@@ -42,6 +41,8 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/libwebp.tar.gz \
     && rm -rf /tmp/graalvm.tar.gz
+
+RUN curl -fsSL https://bun.sh/install | bash
 
 ENV JAVA_HOME=/opt/java/graalvm \
     LIBWEBP_HOME=/opt/libwebp \
